@@ -1,11 +1,8 @@
 import random
 
-def pop(set_1, set_2):
-    for n in set_1:
-        if n in set_2:
-            set_2.remove(n)
-
-    return(set_2)
+game = True
+status = None
+full_set = []
 
 def shuffle(set):
     
@@ -26,6 +23,14 @@ def shuffle(set):
 
     return stock, computer, player
 
+
+def pop(set_1, set_2):
+    for n in set_1:
+        if n in set_2:
+            set_2.remove(n)
+
+    return(set_2)
+
 def get_snake(set):
     snake = []
 
@@ -37,37 +42,88 @@ def get_snake(set):
                 snake[0] = n
     return snake
 
-status = None
-full_set = []
+def check_move(move):
 
-while status is None:
-    stock, computer, player = shuffle(full_set)
+    valid = True
+    if len(move) == 1 and move != 0 or len(move) > 2:
+        valid = False
 
-    c_snake = get_snake(computer)
-    p_snake = get_snake(player)
+    direction = move[0]
+    piece = move[1]
+    try:
+        piece = int(piece)
+    except:
+        print('Invalid input. Please try again.')
+        continue
 
-    if c_snake > p_snake:
-        snake = c_snake
-        computer.remove(snake[0])
-        status = 'player'
-    elif p_snake > c_snake:
-        snake = p_snake
-        player.remove(snake[0])
-        status = 'computer'
+    if piece < 0 or piece > len(player):
+        print('Invalid input. Please try again.')
+        continue
 
-print(70 * '=')
-print(f'Stock size: {len(stock)}')
-print(f'Computer pieces: {len(computer)}\n')
-print(snake[0])
-print()
-print('Your pieces:')
+    if direction not in ['+', '-']:
+        print('Invalid input. Please try again.')
+        continue
 
-i = 1
-for n in player:
-    print(f'{i}:{n}')
-    i += 1
+while game is True:
 
-if status == "player":
-    print("\nStatus: It's your turn to make a move. Enter your command.")
-else:
-    print("\nStatus: Computer is about to make a move. Press Enter to continue...")
+    while status is None:
+        stock, computer, player = shuffle(full_set)
+
+        c_snake = get_snake(computer)
+        p_snake = get_snake(player)
+
+        if c_snake > p_snake:
+            snake = c_snake
+            computer.remove(snake[0])
+            status = 'player'
+        elif p_snake > c_snake:
+            snake = p_snake
+            player.remove(snake[0])
+            status = 'computer'
+
+    print(70 * '=')
+    print(f'Stock size: {len(stock)}')
+    print(f'Computer pieces: {len(computer)}\n')
+    print(snake)
+    print()
+    print('Your pieces:')
+
+    i = 1
+    for n in player:
+        print(f'{i}:{n}')
+        i += 1
+
+   
+    if status == "player":
+        move = None
+        while status is "player":
+            move = input("\nStatus: It's your turn to make a move. Enter your command.")
+
+            if check_move(move) is False:
+                print('Invalid input. Please try again.')
+                continue
+
+            else:
+                if direction == '+':
+                    piece = player.pop(piece - 1)
+                    snake.append(piece)
+                    print(snake)
+                else:
+                    piece = player.pop(piece - 1)
+                    snake.insert(0, piece)
+                    print(snake)
+
+                i = 1
+                for n in player:
+                    print(f'{i}:{n}')
+                    i += 1
+
+                status = 'computer'
+                game = 'off'
+                
+  
+
+    else:
+        print("\nStatus: Computer is about to make a move. Press Enter to continue...")
+        game = 'off'
+
